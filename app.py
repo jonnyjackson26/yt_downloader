@@ -20,6 +20,15 @@ def download():
             ydl_opts = {
                 'format': 'bestvideo+bestaudio/best',
                 'outtmpl': '%(title)s.%(ext)s',
+                'postprocessors': [{
+                    'key': 'FFmpegVideoConvertor',
+                    'preferedformat': 'mp4',
+                }],
+            }
+        elif format_choice == "webm":
+            ydl_opts = {
+                'format': 'bestvideo+bestaudio/best',
+                'outtmpl': '%(title)s.%(ext)s',
             }
         elif format_choice == "mp3":
             ydl_opts = {
@@ -34,14 +43,16 @@ def download():
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(url, download=True)
-            # Get the final filename for the MP3
+            # Get the final filename based on the selected format
             file_path = ydl.prepare_filename(info_dict)
-            if format_choice == "mp3":
-                file_path = file_path.replace('.webm', '.mp3')  # Update the path to point to the MP3
+
+            # Check if the format is MP4 and adjust the file path accordingly
+            if format_choice == "mp4":
+                file_path = file_path.replace('.webm', '.mp4')  # Update the path to point to the MP4
 
         print(f"File downloaded to: {file_path}")
 
-        # Use send_file to send the downloaded MP3 file
+        # Use send_file to send the downloaded file
         return send_file(file_path, as_attachment=True)
     except Exception as e:
         print(f"Error: {e}")  # Log the error to the console
